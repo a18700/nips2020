@@ -53,6 +53,7 @@ class AttentionConv(nn.Module):
         # K : neighbors, K = 20 for local / non-local operation both.
         # C + C' = C_out 
 
+
         ''' 1. Local operation '''
         ''' 1.1. get point features '''
         x_l_qkv = x # B, C, N, K
@@ -111,11 +112,11 @@ class AttentionConv(nn.Module):
         # k_nl, v_nl : B, G, C'//G, K'
         # omit nl.
 
-        # (original)
+        # (original - non-local)
         # qTk : (B, G, N, C'//G) x (B, G, C'//G, N) = B, G, N, N
         # qTkV : (B, G, N, N) x (B, G, N, C'//G) = B, G, N, C//G 
 
-        # (select) -> memory / flops friendly, while maintaining non-local diffusion.
+        # (selection - non-local) -> memory / flops friendly, while maintaining non-local diffusion.
         # qTk : (B, G, N, C'//G) x (B, G, C'//G, K') = B, G, N, K'
         # qTkV : (B, G, N, K') x (B, G, K', C'//G) = B, G, N, C'//
 
