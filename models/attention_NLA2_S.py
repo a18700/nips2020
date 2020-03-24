@@ -55,7 +55,7 @@ class AttentionConv(nn.Module):
 
         ''' 1. Local operation '''
         ''' 1.1. get point features '''
-        x_l_qkv = x # B, C, N, K
+        x_l_qkv = x # B, C_in, N, K
 
         ''' 1.2. transform by Wq, Wk, Wv '''
         q_out = self.query_conv(x_l_qkv) # B, C, N, K
@@ -115,11 +115,11 @@ class AttentionConv(nn.Module):
         # k_nl, v_nl : B, G, C'//G, K'
         # omit nl.
 
-        # (original)
+        # (original non-local)
         # qTk : (B, G, N, C'//G) x (B, G, C'//G, N) = B, G, N, N
         # qTkV : (B, G, N, N) x (B, G, N, C'//G) = B, G, N, C//G 
 
-        # (select) -> memory / flops friendly, while maintaining non-local diffusion.
+        # (select non-local) -> memory / flops friendly, while maintaining non-local diffusion.
         # qTk : (B, G, N, C'//G) x (B, G, C'//G, K') = B, G, N, K'
         # qTkV : (B, G, N, K') x (B, G, K', C'//G) = B, G, N, C'//G
 
