@@ -140,11 +140,14 @@ class AttentionConv(nn.Module):
         v_nl_out = torch.gather(v_nl_out, 3, idx_score) # B, G, C'//G, N -> B, G, C'//G, K'
 
         #TODO : activation is needed or not? it's related to soften & linear procedure.
+        
+        ''' 2.5. multiply attention score for providing gradient path for important nodes '''
         v_nl_out = v_nl_out * self.act(val_score) # activation
 
-        ''' 2.5. multiply attention score for providing gradient path to self.scoring '''
         out_all = torch.matmul(torch.transpose(q_nl_out, 2,3), k_nl_out) # B, G, N, K'
         out_all = F.softmax(out_all, dim=-1) # B, G, N, K'
+        
+        ''' 2.6. addressing and scaling '''
 
         if self.scale:
             scaler = torch.tensor([self.nl_channels / self.groups]).cuda()
