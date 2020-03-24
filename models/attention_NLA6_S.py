@@ -68,7 +68,7 @@ class AttentionConv(nn.Module):
         v_out = v_out.view(batch, self.groups, self.l_channels // self.groups, npoints, -1) # B, G, C//G, N, K
 
       
-        #TODO RPE for non-local operation?
+        #TODO RPE for local operation?
         ''' 1.4. relative positional encoding ''' 
         if self.rpe:
             k_out = k_out + self.rel_k 
