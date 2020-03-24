@@ -165,7 +165,7 @@ class AttentionConv(nn.Module):
         k_m = k_m.view(batch, self.groups, self.m_channels//self.groups, -1) # B, G, C''/G, K'L
         v_m = v_m.view(batch, self.groups, self.m_channels//self.groups, -1) # B, G, C''/G, K'L
 
-        ''' 2.6. multiply attention score for providing gradient path to self.scoring '''
+        ''' 2.6. addressing and scaling '''
         out_all = torch.matmul(torch.transpose(q_m_out, 2,3), k_m) # B, G, N, K'L
         out_all = F.softmax(out_all, dim=-1) # B, G, N, K'L
 
@@ -182,7 +182,7 @@ class AttentionConv(nn.Module):
         else:
             out_all = out_all.permute(0, 1, 3, 2).contiguous().view(batch, -1, npoints, 1) # B, G, N, C''//G -> B, G, C''//G, N -> B, C'', N, 1
 
-        ''' 2.7. 1x1 convolution and batch normalization for memory to current layer. ''' 
+        ''' 2.7. 1x1 convolution and batch normalization layer for memory to current layer. ''' 
         out_all = self.m_to_nl(out_all)
 
         ''' 3. Concat '''
