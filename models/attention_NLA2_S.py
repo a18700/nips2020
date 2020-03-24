@@ -101,7 +101,6 @@ class AttentionConv(nn.Module):
             if i == 0:
                 group_score = score
             else:
-
                 group_score = torch.cat([group_score, score], dim=2) # B, 1, G, N
         group_score = group_score.permute(0, 2, 1, 3) # B, G, 1, N
         val_score, idx_score = group_score.topk(k=neighbors, dim=3) # B, G, 1, N -> B, G, 1, K'
@@ -136,7 +135,7 @@ class AttentionConv(nn.Module):
         k_nl_out = k_nl_out.view(batch, self.groups, self.nl_channels // self.groups, npoints) # B, G, C'//G, N
         v_nl_out = v_nl_out.view(batch, self.groups, self.nl_channels // self.groups, npoints) # B, G, C'//G, N
 
-        ''' 2.4. select q, k, v by top-k idx '''
+        ''' 2.4. select k, v by top-k idx '''
         idx_score = idx_score.repeat(1,1,self.nl_channels // self.groups, 1) # B, G, 1, K' -> B, G, C'//G, K'
         val_score = val_score.repeat(1,1,self.nl_channels // self.groups, 1) # B, G, 1, K' -> B, G, C'//G, K'
         k_nl_out = torch.gather(k_nl_out, 3, idx_score) # B, G, C'//G, N -> B, G, C'//G, K'
