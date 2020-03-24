@@ -141,9 +141,10 @@ class AttentionConv(nn.Module):
         k_nl_out = torch.gather(k_nl_out, 3, idx_score) # B, G, C'//G, N -> B, G, C'//G, K'
         v_nl_out = torch.gather(v_nl_out, 3, idx_score) # B, G, C'//G, N -> B, G, C'//G, K'
 
-        v_nl_out = v_nl_out * val_score
-
         ''' 2.5. multiply attention score for providing gradient path to self.scoring '''
+        v_nl_out = v_nl_out * val_score
+        
+        ''' 2.6. addressing and scaling '''
         out_all = torch.matmul(torch.transpose(q_nl_out, 2,3), k_nl_out) # B, G, N, K'
         out_all = F.softmax(out_all, dim=-1) # B, G, N, K'
 
