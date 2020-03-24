@@ -44,11 +44,11 @@ def get_neighbors(x, k=20, idx=None, delta=True, neighbors=True, static=False, l
             idx_initial = idx
 
     device = torch.device('cuda')
-    idx_base = torch.arange(0, batch_size, device=device).view(-1, 1, 1)*num_points # 1, 1, 1
+    idx_base = torch.arange(0, batch_size, device=device).view(-1, 1, 1)*num_points
 
     idx = idx + idx_base # B, N, K
 
-    _, num_dims, _ = x.size() # 3
+    _, num_dims, _ = x.size() 
     x = x.transpose(2, 1).contiguous() # B, N, C
 
     abs_x = x.permute(0,2,1).unsqueeze(3)
@@ -145,21 +145,17 @@ class DGCNN_Transformer(nn.Module):
 
 
         x, abs_x, idx1 = get_neighbors(x, k=self.k, delta=self.delta, neighbors=self.neighbors, layer=1) # b, 64, 1024, 20
-        #print("1")
         x1 = self.conv1(x, abs_x, idx1) # b, 64, 1024
         x1 = self.act1(self.bn1(x1)).squeeze(3)
 
-        #print("2")
         x, abs_x, idx2 = get_neighbors(x1, k=self.k, delta=self.delta, neighbors=self.neighbors, layer=2) # b, 64, 1024, 20
         x2 = self.conv2(x, abs_x, idx2) # b, 64, 1024
         x2 = self.act2(self.bn2(x2)).squeeze(3)
 
-        #print("3")
         x, abs_x, idx3 = get_neighbors(x2, k=self.k, delta=self.delta, neighbors=self.neighbors, layer=3) # b, 64, 1024, 20
         x3 = self.conv3(x, abs_x, idx3) # b, 128, 1024
         x3 = self.act3(self.bn3(x3)).squeeze(3)
 
-        #print("4")
         x, abs_x, idx4 = get_neighbors(x3, k=self.k, delta=self.delta, neighbors=self.neighbors, layer=4) # b, 64, 1024, 20
         x4 = self.conv4(x, abs_x, idx4) # b, 256, 1024, 20
         x4 = self.act4(self.bn4(x4)).squeeze(3)
