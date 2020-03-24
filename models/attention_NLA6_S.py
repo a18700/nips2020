@@ -46,7 +46,11 @@ class AttentionConv(nn.Module):
 
     def forward(self, x, abs_x, idx):
         batch, channels, npoints, neighbors = x.size() # B, C, N, K
-
+        # B : batch
+        # G : groups
+        # C : local operation channels
+        # C' : non-local operation channels
+        # K : neighbors, K = 20 for local / non-local operation both.
         # C + C' = C_out 
 
         ''' 1. Local operation '''
@@ -129,7 +133,7 @@ class AttentionConv(nn.Module):
         v_nl_out = v_nl_out.view(batch, self.groups, self.nl_channels // self.groups, npoints) # B, G, C'//G, N
 
         ''' 2.4. select q, k, v by top-k idx '''
-        idx_score = idx_score.repeat(1,1,self.nl_channels // self.groups, 1) # B, G, 1, 1, K' -> B, G, C'//G, K'
+        idx_score = idx_score.repeat(1,1,self.nl_channels // self.groups, 1) # B, G, 1, K' -> B, G, C'//G, K'
         val_score = val_score.repeat(1,1,self.nl_channels // self.groups, 1) # B, G, 1, K' -> B, G, C'//G, K'
         k_nl_out = torch.gather(k_nl_out, 3, idx_score) # B, G, C'//G, N -> B, G, C'//G, K'
         v_nl_out = torch.gather(v_nl_out, 3, idx_score) # B, G, C'//G, N -> B, G, C'//G, K'
